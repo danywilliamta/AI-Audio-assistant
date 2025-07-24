@@ -2,6 +2,8 @@
 from dataclasses import dataclass, field
 from typing import Optional
 from dataclasses import asdict
+from pydantic import BaseModel
+from abc import ABC
 
 CompressorSettingsMapping = {
     'threshold': 'Threshold',
@@ -93,11 +95,16 @@ ReverbSettingsMapping = {
     "delta":       "Delta",
 }
 
+class BaseSettings(BaseModel, ABC):
+    def _to_dict(self) -> dict:
+            return {
+                self.mapping[k]: v
+                for k, v in asdict(self).items()
+                if v is not None and k != "mapping"
+            }
 
 
-
-@dataclass
-class CompressorSettings:
+class CompressorSettings(BaseSettings):
     threshold: Optional[float] = None
     ratio: Optional[float] = None
     attack: Optional[float] = None
@@ -112,12 +119,10 @@ class CompressorSettings:
     knee: Optional[float] = None
     mapping: dict = field(default_factory=lambda: CompressorSettingsMapping.copy())
 
-    def _to_dict(self)-> dict:
-        return {self.mapping[k]: v for k, v in asdict(self).items() if v is not None and k != "mapping"}
 
 
 @dataclass
-class EQSettings:
+class EQSettings(BaseSettings):
     freq_low_shelf: Optional[float] = None
     gain_low_shelf: Optional[float] = None
     bw_low_shelf: Optional[float] = None
@@ -143,14 +148,10 @@ class EQSettings:
 
     mapping: dict = field(default_factory=lambda: EqSettingsMapping.copy())
 
-    def _to_dict(self)-> dict:
-        return {self.mapping[k]: v for k, v in asdict(self).items() if v is not None and k != "mapping"}
     
 
-
-
 @dataclass
-class ReverbSettings:
+class ReverbSettings(BaseSettings):
     wet: Optional[float]       = None
     dry: Optional[float]       = None
     room_size: Optional[float] = None
@@ -165,12 +166,9 @@ class ReverbSettings:
 
     mapping: dict = field(default_factory=lambda: ReverbSettingsMapping.copy())
 
-    def _to_dict(self) -> dict:
- 
-        return {self.mapping[k]: v for k, v in asdict(self).items() if v is not None and k != "mapping"}
     
 @dataclass
-class DelaySettings:
+class DelaySettings(BaseSettings):
     wet: Optional[float] = None
     dry: Optional[float] = None
     enabled: Optional[float] = None
@@ -187,7 +185,3 @@ class DelaySettings:
     delta: Optional[float] = None
 
     mapping: dict = field(default_factory=lambda: DelaySettingsMapping.copy())
-
-    def _to_dict(self) -> dict:
- 
-        return {self.mapping[k]: v for k, v in asdict(self).items() if v is not None and k != "mapping"}

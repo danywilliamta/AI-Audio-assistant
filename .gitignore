@@ -1,0 +1,36 @@
+# Ignore l'environnement virtuel nommé 'my_env'
+my_env/
+my_env/**
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv generic fallback (au cas où le nom change)
+.env/
+.venv/
+env/
+venv/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs et autres fichiers inutiles
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDEs & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS / Linux / Windows OS files
+.DS_Store
+Thumbs.db
