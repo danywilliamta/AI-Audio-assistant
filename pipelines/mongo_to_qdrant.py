@@ -11,3 +11,7 @@ def retrieve_insert_chunks_to_qdrant():
     """
     chunks = retrieve_chunks_from_mango()
     store_chunks_in_qdrant(chunks)
+
+if __name__ == "__main__":
+    retrieve_insert_chunks_to_qdrant()
+    logger.info("Pipeline executed successfully.")

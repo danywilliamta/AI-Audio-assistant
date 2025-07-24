@@ -8,6 +8,7 @@ from model import EQSettings, CompressorSettings, ReverbSettings, DelaySettings
 from typing import Any
 from mcp.server.fastmcp import FastMCP
 from langchain_chroma import Chroma
+from model.qdrant import QdrantVectorStore
 from langchain_community.embeddings import FastEmbedEmbeddings
 
 embedding = FastEmbedEmbeddings()
@@ -219,9 +220,8 @@ async def get_information_query_chroma( query:str):
         "Tips for adding reverb to a lead synth"
     """
    
-    vector_store = Chroma(persist_directory=DB_PATH, embedding_function=embedding)
-
-    results = vector_store.similarity_search(query, k=3)
+    vector_store = QdrantVectorStore()
+    results = vector_store.search_embeddings(query, limit=3)
 
     return "Advices \n".join([doc.page_content for  doc in results])
 

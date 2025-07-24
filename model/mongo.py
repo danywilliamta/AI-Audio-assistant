@@ -58,13 +58,15 @@ class NoSQLBaseDocument(BaseModel, Generic[T], ABC):
         Returns:
             Instance of T: the latest document.
         """
-        logger.info(f"Retrieving latest {limit} documents from collection: {cls.collection_name}")
+
         collection = _database[cls.collection_name]
-        if not collection:
-            logger.error(f"Collection {cls.collection_name} does not exist in the database.")
-            return []
+        logger.info(f"Collection {cls.collection_name} exists in the database.")
         cursor = collection.find().sort("metadata.created_at", DESCENDING).limit(limit)
-        doc = list(cursor)[0]
+        res = list(cursor)
+        if len(res) == 0:
+            logger.warning(f"No documents found in the {cls.collection_name} collection.")
+            return None
+        doc = res[0]
 
         return cls.from_dict(doc)
     

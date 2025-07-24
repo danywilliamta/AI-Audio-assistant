@@ -4,7 +4,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from loguru import logger 
 from settings import settings
-
+from langchain.embeddings import FastEmbedEmbeddings
 
 class QdrantVectorStore:
     """
@@ -13,6 +13,8 @@ class QdrantVectorStore:
 
     def __init__(self, embedding_model=settings.EMBEDDING_MODEL, collection_name="embeddings"):
         self.embedding_model = HuggingFaceEmbeddings(model_name=embedding_model)
+        # self.embedding_model = FastEmbedEmbeddings() much faster but maybe not as good as HuggingFaceEmbeddings? 
+
         self.collection_name = collection_name
         self.client = QdrantClient(host="localhost", port=6333)
         if not self.client.collection_exists(self.collection_name):
@@ -36,11 +38,11 @@ class QdrantVectorStore:
             texts (list): List of texts to be embedded and stored.
         """
         # Create a Qdrant instance with the specified embedding model
-        qdrant = Qdrant.from_texts(
+        qdrant = Qdrant(client=self.client, collection_name=self.collection_name, embeddings=self.embedding_model)
+        qdrant = qdrant.from_texts(
             texts=texts,
             embedding=self.embedding_model,
             collection_name=self.collection_name,
-            client=self.client
         )
         return qdrant
 
